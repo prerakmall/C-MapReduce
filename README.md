@@ -7,4 +7,4 @@ We used an example of ASCII Word Counting application to demonstrate the MapRedu
 
 The map() routine and reduce routine can however be substituted by another implementation for solving generic problem that fits the MapReduce programming model.
 
-This is initially developed as the final project of the course - Operating Systems held by HK Polytechnic University. It's jointly developed by Jeffrey Garcia and Bill K K Chan.
+This is initially developed as the final project of the course - Fundamentals of Operating Systems held by HK Polytechnic University. 
