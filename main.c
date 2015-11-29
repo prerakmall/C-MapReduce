@@ -4,6 +4,9 @@
 #include <string.h>
 //#include <stdbool.h>
 
+#include "splitfile.c" // for splitting the input problem
+#include "wordcount.c" // for word counting operating
+#include "mergeutility.c" // for estimating and planning of the reduce tasks
 
 
 /*
@@ -28,12 +31,14 @@ int reducerToMasterPipe[2]; // for Reducer -> Master
 
 
 
-void reduce() {
+void reduce(char *mergeTask) {
     // implement the reduce operation here ...
+    executeMerge(mergeTask);
 }
 
-void map() {
+void map(char *fName) {
     // implement the map operation here ...
+    wordcount(fName);
 }
 
 void reducerInformMaster() {
@@ -65,7 +70,7 @@ void reducerRoutine() {
         printf("reducer [PID: %d] %lu char read from pipe: [%s]\n", getpid(), strlen(buf), buf);
         
         // execute the reduce operation
-        reduce();
+        reduce(buf);
         
         // inform master when reduce task finish
         reducerInformMaster();
@@ -108,7 +113,7 @@ void mapperRoutine() {
         printf("mapper [PID: %d] %lu char read from pipe: [%s]\n", getpid(), strlen(buf), buf);
         
         // execute the map operation
-        map();
+        map(buf);
         
         // inform master when map task finish
         mapperInformMaster();
@@ -123,6 +128,20 @@ void mapperRoutine() {
 }
 
 void masterWakeupUser() {
+    // === sort the final reduced file ===
+    char *tmp = (char *) malloc(sizeof(char));
+    printf("@@ reduceTasksCount: %d\n", reduceTasksCount);
+    tmp[0] = reduceTasksCount + '0';
+    char *finalMergedFileName = getFilename("reduced_", tmp);
+    printf("@@ %s:\n", finalMergedFileName);
+    int numberOfWords = getNumberOfWordsInFile(finalMergedFileName);
+    char *sortedMergeFile = sortWords(finalMergedFileName, numberOfWords);
+    // ===================================
+    
+    // === combine the counts in final reduced file ===
+    countWords(sortedMergeFile);
+    // ================================================
+    
     // === All MapReduce tasks finish, Master inform Parent to wake-up ===
     close(masterToParentPipe[0]); // avoid master read from output to parent
     
@@ -151,8 +170,11 @@ void masterWaitForReducer() {
      *   which makes it impossible to ressemble the original data
      */
     while((temp = read(reducerToMasterPipe[0], buf, 1)) > 0) {
-        printf("master [PID: %d] process %lu char read from pipe: [%s]\n", getpid(), strlen(buf), buf);
+        printf("master [PID: %d] process %lu char read from reducer pipe: [%s]\n", getpid(), strlen(buf), buf);
         completedTaskCount++;
+        
+        printf("@@ completed task count: %d\n", completedTaskCount);
+        printf("@@ reduce task count: %d\n", reduceTasksCount);
         
         if (completedTaskCount >= reduceTasksCount) {
             break; // break the read roop if ALL callback from reducer tasks received
@@ -184,7 +206,7 @@ void masterWaitForMapper() {
      *   which makes it impossible to ressemble the original data
      */
     while((temp = read(mapperToMasterPipe[0], buf, 1)) > 0) {
-        printf("master [PID: %d] process %lu char read from pipe: [%s]\n", getpid(), strlen(buf), buf);
+        printf("master [PID: %d] process %lu char read from mapper pipe: [%s]\n", getpid(), strlen(buf), buf);
         completedTaskCount++;
         
         if (completedTaskCount >= mapTasksCount) {
@@ -202,15 +224,18 @@ void masterWaitForMapper() {
 
 void initReduceTasks() {
     // implement the logic to decide no. of reduce tasks based on output file from mapper
-    reduceTasksCount = 2; // debugger
+    //reduceTasksCount = 2; // debugger
+    reduceTasksCount = mergePlanner(mapTasksCount); // pass the input problem size
+    printf("number of reduce tasks planned: %d\n:", reduceTasksCount);
 }
 
 void masterAssignReducer() {
     // === Master picks idle reducer and assigns each one a map task ===
     close(masterToReducerPipe[0]); // avoid master read from output to reducer
     
-    char *buf = "this is a reduce test";
-    printf("output buf: %lu \n", strlen(buf));
+    // debugger
+    //char *buf = "this is a reduce test";
+    //printf("output buf: %lu \n", strlen(buf));
     
     initReduceTasks();
     
@@ -218,6 +243,11 @@ void masterAssignReducer() {
     
     while(1) {
         printf("assigning task to reducer...\n");
+        
+        /* assign the corresonding merge task to each
+         * reducer base on the merge plan
+         */
+        char* buf = getMergeTask(reduceTasksCount - initialTaskCount + 1);
         
         /* this line will hit error and quit the program
          * if no more reader is accepting input from the pipe
@@ -241,13 +271,17 @@ void masterAssignMapper() {
     // === Master picks idle mapper and assigns each one a map task ===
     close(masterToMapperPipe[0]); // avoid master read from output to mapper
     
-    char *buf = "this is a map test";
-    printf("output buf: %lu \n", strlen(buf));
+    // debugger
+    //char *buf = "this is a map test";
+    //printf("output buf: %lu \n", strlen(buf));
     
     int initialTaskCount = mapTasksCount;
     
     while(1) {
         printf("assigning task to mapper...\n");
+        
+        // assign the splitted input filename to each mapper
+        char *buf = getSplitFilename(initialTaskCount);
         
         /* this line will hit error and quit the program
          * if no more reader is accepting input from the pipe
@@ -307,6 +341,10 @@ void userRoutine() {
     
     close(masterToParentPipe[0]); // avoid user further read input from master
     // =============================================================================================
+    
+    // === combine the counts in final reduced file ===
+    //countWords(sortedMergeFile);
+    // ================================================
 }
 
 void forkChild() {
@@ -396,19 +434,34 @@ void createPipes() {
 }
 
 void initChildsCounter() {
-    reducerCount = 1; // reducer count is typically set to number of machine(s)
-    mapperCount = reducerCount * 4; // mapper count is typically set to 4 times of reducer
+    /*******************************************************************************
+     * Ideally, number of mapper (M) and reducer (R) should be much larger than 
+     * the number of worker machines 
+     *
+     * We tend to choose M so that each individual task is roughly with same size 
+     * of input data. While R is just a small multiple of the number of worker 
+     * machines in use
+     *******************************************************************************/
+    
+    mapperCount = mapTasksCount; // mapper count is simply set to mapTasksCount
+    reducerCount = mapperCount / 4; // reducer count is simply set to 4 times smaller than mapper
     MAX_CHILDS = 1 + mapperCount + reducerCount; //at least 1 is master, the rest can be mapper or reducer
+    
+    printf("Map Worker(s): %d\n", mapperCount);
+    printf("Reduce Worker(s): %d\n", reducerCount);
+    printf("Max Worker(s): %d\n", MAX_CHILDS);
 }
 
 void initMapTasks() {
     // implement the logic to decide no. of map tasks based on input file from user
-    mapTasksCount = 5; // debugger
+    mapTasksCount = splitfile();
+    printf("Map Tasks Count: %d\n", mapTasksCount);
 }
 
-int main(int argc, char *argv[]) {
+int main() {
     initMapTasks();
     initChildsCounter();
     createPipes();
     forkChild();
 }
+
