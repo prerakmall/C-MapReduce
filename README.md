@@ -13,7 +13,7 @@ The input and output file samples has also been uploaded as well for illustratio
 This is initially developed by myself (Jeffrey K L Wong) and Bill K K Chan as the final project of the course - Fundamentals of Operating Systems during our Master Study in HK Polytechnic University. 
 
 
-# Walkthough
+# Walkthrough
 The WordCount application is quite straight-forward.
 
 The Mapper implementation, via the map method, processes one line at a time. It splits the line into tokens separated by whitespaces or symbols, and emits a key-value pair of < _WORD_ , 1>.
