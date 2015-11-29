@@ -442,6 +442,3 @@ int getNumberOfWordsInFile(char *fName) {
     printf("number of words: [%d]\n",wordCount);
     return wordCount;
 }
-
-
-
