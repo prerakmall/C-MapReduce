@@ -1,0 +1,7 @@
+Hello, this is a WordCount application which works quite straight-forward! 
+
+It's been designed to support english only, so all the text must be in ASCII.
+
+The file MUST be encoded using "ASCII" scheme.
+
+Have FUN!!!
