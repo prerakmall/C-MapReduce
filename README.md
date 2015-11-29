@@ -8,6 +8,7 @@ We used an example of a hand-made ASCII word counting application to demonstrate
 The map() routine and reduce() routine can however be substituted by any other implementation for solving generic problem that fits the MapReduce programming model.
 
 The input and output file samples has also been uploaded as well for illustration about how the data is being manipulated during the process.
+[Get the output data](https://drive.google.com/file/d/0BwP5Ki5tO2LsTGhHVlBIYmVBUFk/view?usp=sharing)
 
 This is initially developed by myself (Jeffrey K L Wong) and Bill K K Chan as the final project of the course - Fundamentals of Operating Systems during our Master Study in HK Polytechnic University. 
 
