@@ -15,49 +15,46 @@ This is initially developed by myself (Jeffrey K L Wong) and Bill K K Chan as th
 # Walkthough
 The WordCount application is quite straight-forward.
 
-The Mapper implementation, via the map method, processes one line at a time. It splits the line into tokens separated by whitespaces or symbols, and emits a key-value pair of < <word>, 1>.
+The Mapper implementation, via the map method, processes one line at a time. It splits the line into tokens separated by whitespaces or symbols, and emits a key-value pair of < _WORD_ , 1>.
 
 For an sample input:
 Hello World Bye World\n
 Hello Map Reduce Goodbye Map Reduce\n
 
 The first map emits:
-< Hello, 1> 
-< World, 1> 
-< Bye, 1> 
-< World, 1> 
+< Hello, 1>  
+< World, 1>  
+< Bye, 1>  
+< World, 1>   
 
 The second map emits:
-< Hello, 1> 
-< Map, 1> 
-< Reduce, 1> 
-< Goodbye, 1> 
-< Map, 1> 
-< Reduce, 1> 
+< Hello, 1>  
+< Map, 1>  
+< Reduce, 1>  
+< Goodbye, 1>  
+< Map, 1>  
+< Reduce, 1>  
+  
+Our program also specifies a combiner. Hence, the output of each map is passed through the local combiner (which is same as the Reducer as per the job configuration) for local aggregation, after being sorted on the keys.  
 
-Our program also specifies a combiner. Hence, the output of each map is passed through the local combiner (which is same as the Reducer as per the job configuration) for local aggregation, after being sorted on the keys.
-
-The output of the first map:
-< Bye, 1> 
-< Hello, 1> 
-< World, 2> 
-
-The output of the second map:
-< Goodbye, 1> 
-< Hello, 1> 
-< Map, 2> 
-< Reduce, 2> 
-
+The output of the first map:  
+< Bye, 1>  
+< Hello, 1>  
+< World, 2>  
+  
+The output of the second map:  
+< Goodbye, 1>  
+< Hello, 1>  
+< Map, 2>  
+< Reduce, 2>  
+  
 The Reducer implementation, via the reduce method just sums up the values, which are the occurence counts for each key (i.e. words in this example).
-
-Thus the output of the job is:
-< Bye, 1> 
-< Hello, 2> 
-< Goodbye, 1> 
-< Map, 2> 
-< Reduce, 2> 
-< World, 2> 
-
-
-
-
+  
+Thus the output of the job is:  
+< Bye, 1>   
+< Hello, 2>  
+< Goodbye, 1>  
+< Map, 2>  
+< Reduce, 2>  
+< World, 2>  
+  
