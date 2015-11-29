@@ -44,6 +44,22 @@ char* getSortedFilename(char *fName) {
     free(newName);
 }
 
+char* getOutputFilename(char *fName) {
+    char *outputName = "output_";
+    //printf("%lu\n", strlen(outputName));
+    
+    char *newName = (char *) malloc(strlen(outputName) + strlen(fName));
+    //printf("%lu\n", strlen(newName));
+    
+    strcpy(newName, outputName);
+    strcat(newName, fName);
+    //printf("%lu\n", strlen(newName));
+    //printf("--> %s", newName);
+    
+    return newName;
+    free(newName);
+}
+
 int compareString(char *string1, char *string2) {
     int result;
     result = strcmp(string1, string2);
@@ -101,11 +117,13 @@ void countWords(char *fName) {
                 // do the comparision here
                 if (strlen(prevString) <= 0) { // the first record, prevString is empty
                     //printf("the first record [%s]-->\n",string);
+                    string[strlen(string)] = '\0'; //add the null-termination character '\0'
                     
                     /* copy the current string to the previous string
                      * destroy current sting
                      */
                     prevString = copyString(string);
+                    prevString[strlen(prevString)] = '\0'; //add the null-termination character '\0'
                     
                 } else {
                     /* compare the current string with previous string 
@@ -113,10 +131,14 @@ void countWords(char *fName) {
                      * if not matches, write the output associated match count to output file, then reset match count to 1
                      */
                     if (compareString(prevString, string) != 0) { // No match is found
+                        string[strlen(string)] = '\0'; //add the null-termination character '\0'
                         //printf("no more match found for [%s] --> %d\n", prevString, matchCount);
                         fprintf(fpOut, "%s,%d\n", prevString, matchCount);
+                        
                         matchCount = 1;
                         prevString = copyString(string);
+                        prevString[strlen(prevString)] = '\0'; //add the null-termination character '\0'
+                        
                     } else {
                         matchCount++;
                         //printf("a previous match is found for [%s]-->\n",string);
@@ -160,7 +182,6 @@ char* sortWords(char *fName, int wordCount) {
     char *string;
     int count = 0;
     
-    
     // instantiate the array of Strings
     int nRows = wordCount;
     int recordCount = 0;
@@ -171,6 +192,7 @@ char* sortWords(char *fName, int wordCount) {
     while ((temp = fgetc(fpIn)) != EOF) {
         if (temp == '\n' || temp == ' ') {
             if (count > 0) {
+                string[strlen(string)] = '\0'; //add the null-termination character '\0'
                 arrayOfString [recordCount] = string;
                 //printf("%s-->",string);
                 recordCount ++;
@@ -214,11 +236,15 @@ char* sortWords(char *fName, int wordCount) {
     return fNameOutput;
 }
 
-int main() {
+int wordcount(char *fName) {
 	FILE *fpIn;
     FILE *fpOut;
-	fpIn = fopen("input01.txt", "r");
-    fpOut = fopen("output01.txt", "w+");
+	fpIn = fopen(fName, "r");
+    fpOut = fopen(getOutputFilename(fName), "w+");
+    
+    // debugger
+    //fpIn = fopen("input01.txt", "r");
+    //fpOut = fopen("output01.txt", "w+");
     
 	char temp;
 	char *string;
@@ -235,18 +261,20 @@ int main() {
             temp == '<' || temp == '>' || temp == '\r' || temp == '/' || temp == '\'' || temp == '`'
         ){
 			if (charCount > 0) {
+                string[strlen(string)] = '\0'; //add the null-termination character '\0'
 				//printf("[%s]-->\n",string);
                 fprintf(fpOut, "%s\n", string);
                 wordCount ++;
                 charCount = 0;
 				free(string);
-                string = malloc(sizeof(char));
+                string = calloc(0, sizeof(char));
 			}
 		} else {
 			if (charCount == 0) {
 				string = malloc(sizeof(char));
 			}
 			string[charCount] = temp;
+            string[strlen(string)] = '\0'; //add the null-termination character '\0'
 			charCount ++;
 		}
 	}
@@ -254,8 +282,8 @@ int main() {
 	fclose(fpIn);
     fclose(fpOut);
     
-    char *fNameOutput = sortWords("output01.txt", wordCount);
-    countWords(fNameOutput);
+    char *fNameOutput = sortWords(getOutputFilename(fName), wordCount);
+    //countWords(fNameOutput); // skip the combination of wordcounts, push it to later stage
     
 	return 0;
 }
