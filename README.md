@@ -1,11 +1,11 @@
 # C-MapReduce
 A simple Map Reduce implementation in C programming language.
 
-This program aims to illustrate the basic functioning of a MapReduce framework, it runs on local machine but forking the corresponding worker processes to simulate distributed processes in a cluster of machines. The Inter-Process Communication among the workers (Mapper / Reducer / Master) and with the parent process (the user) is simply achieved by using unamed pipes.
+This program aims to illustrate the basic functioning of a MapReduce framework, it runs on local machine but forking the corresponding worker processes to simulate distributed processes in a cluster of machines. The Inter-Process Communication (IPC) among the workers (Mapper / Reducer / Master) processes and the parent process (the user) is simply achieved by using Uunamed Pipes.
 
 We used an example of a hand-made ASCII word counting application to demonstrate the MapReduce computation, it merely counts the number of English words from an input source, and breaking down the input problem into numerous smaller chunks which will then be processed by the Map workers to generate intermediate output files, such output files will be further processed by the Reduce workers to generate the final combined output files.
 
-The map() routine and reduce() routine can however be substituted by any other implementation for solving generic problem that fits the MapReduce programming model.
+The map() routine and reduce() routine (in main.c) can however be substituted by any other implementation for solving generic problem that fits the MapReduce programming model.
 
 The input and output file samples has also been uploaded as well for illustration about how the data is being manipulated during the process.
 [Get the output data](https://drive.google.com/file/d/0BwP5Ki5tO2LsTGhHVlBIYmVBUFk/view?usp=sharing)
@@ -18,17 +18,17 @@ The WordCount application is quite straight-forward.
 
 The Mapper implementation, via the map method, processes one line at a time. It splits the line into tokens separated by whitespaces or symbols, and emits a key-value pair of < _WORD_ , 1>.
 
-For an sample input:
-Hello World Bye World\n
-Hello Map Reduce Goodbye Map Reduce\n
+For an sample input:  
+Hello World Bye World  
+Hello Map Reduce Goodbye Map Reduce  
 
-The first map emits:
+The first map emits:  
 < Hello, 1>  
 < World, 1>  
 < Bye, 1>  
 < World, 1>   
 
-The second map emits:
+The second map emits:  
 < Hello, 1>  
 < Map, 1>  
 < Reduce, 1>  
