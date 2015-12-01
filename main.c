@@ -1,13 +1,18 @@
+//
+//  main.c
+//  C-MapReduce
+//
+//  Created by jeffrey on 1/12/15.
+//  Copyright © 2015 jeffrey. All rights reserved.
+//
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-//#include <stdbool.h>
 
 #include "splitfile.c" // for splitting the input problem
 #include "wordcount.c" // for word counting operating
 #include "mergeutility.c" // for estimating and planning of the reduce tasks
-
 
 /*
  * Put all GLOBAL variables here
@@ -136,6 +141,7 @@ void masterWakeupUser() {
     printf("@@ %s:\n", finalMergedFileName);
     int numberOfWords = getNumberOfWordsInFile(finalMergedFileName);
     char *sortedMergeFile = sortWords(finalMergedFileName, numberOfWords);
+    free(tmp);
     // ===================================
     
     // === combine the counts in final reduced file ===
@@ -341,10 +347,6 @@ void userRoutine() {
     
     close(masterToParentPipe[0]); // avoid user further read input from master
     // =============================================================================================
-    
-    // === combine the counts in final reduced file ===
-    //countWords(sortedMergeFile);
-    // ================================================
 }
 
 void forkChild() {
