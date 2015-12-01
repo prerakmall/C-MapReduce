@@ -1,3 +1,10 @@
+//
+//  wordcount.c
+//  C-MapReduce
+//
+//  Created by jeffrey on 1/12/15.
+//  Copyright © 2015 jeffrey. All rights reserved.
+//
 #include <stdlib.h>
 #include <stdio.h>
 #include<string.h>
@@ -75,7 +82,6 @@ char* copyString(char *inputString) {
     char *outputString;
     outputString = malloc(strlen(inputString));
     
-    
     // copy the characters from input to output
     for (int i=0; i<strlen(inputString); i++) {
         outputString[i] = inputString[i];
@@ -83,6 +89,7 @@ char* copyString(char *inputString) {
     //printf("output: [%s] ", outputString);
     //printf("size %lu \n", strlen(outputString));
     
+    outputString[strlen(outputString)] = '\0'; //add the null-termination character '\0'
     return outputString;
 }
 
@@ -92,8 +99,8 @@ void countWords(char *fName) {
     fpIn = fopen(fName, "r");
     
     char temp;
-    char *string;
     int charCount = 0;
+    char *string = malloc(sizeof(char));
     
     char *prevString = malloc(sizeof(char));
     //if (strlen(prevString) <= 0) {
@@ -103,7 +110,6 @@ void countWords(char *fName) {
     int matchCount = 1; //initialize the matchCount to 1 cause this is basic count value for each word exist in the input file
     
     FILE *fpOut;
-    char *fNameOutput = getCombinedFilename(fName);
     fpOut = fopen(getCombinedFilename(fName), "w+");
     
     while ((temp = fgetc(fpIn)) != EOF) {
@@ -247,9 +253,9 @@ int wordcount(char *fName) {
     //fpOut = fopen("output01.txt", "w+");
     
 	char temp;
-	char *string;
 	int charCount = 0;
     int wordCount = 0;
+    char *string = malloc(sizeof(char));
     
 	while ((temp = fgetc(fpIn)) != EOF) {
         //printf("[%c]\n", temp);
@@ -271,7 +277,8 @@ int wordcount(char *fName) {
 			}
 		} else {
 			if (charCount == 0) {
-				string = malloc(sizeof(char));
+                free(string);
+				string = calloc(0, sizeof(char));
 			}
 			string[charCount] = temp;
             string[strlen(string)] = '\0'; //add the null-termination character '\0'
