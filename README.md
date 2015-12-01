@@ -22,7 +22,9 @@ However in a real distributed environment M should be much larger than the total
 [Read the paper published from Google](http://research.google.com/archive/mapreduce-osdi04.pdf)  
 
 The overall flow of a MapReduce operation in our implementation is explained below.  
+
 1. The main routine (user program) will first splits the input files into M pieces of smaller chunks containing equal number of words (controllable by the user via an optional parameter). It then use the fork() command to startup many copies of the program on the local machine.  
+
 2. One of the copies of the program is special - the Master. The rest are workers that are assigned with work from the Master. There should be M map tasks and R reduce tasks to assign. The master picks idle worker process and assigns each one a map task or a reduce task.  
 3. A worker who is assigned a map task reads the contents of the corresponding input split. It parses key/value pairs out of the input data and passes each pair to the user-defined Map function. The intermediate key/value pairs produced by the Map function are then written to temporary output files on local disks.  
 4. The output files location are then passed back to the Master, who is responsible for forwarding these files to the reduce workers.  
