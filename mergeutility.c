@@ -1,9 +1,14 @@
+//
+//  mergeutility.c
+//  C-MapReduce
+//
+//  Created by jeffrey on 1/12/15.
+//  Copyright © 2015 jeffrey. All rights reserved.
+//
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-
-
 
 /*
  * Put all GLOBAL variables here
@@ -305,7 +310,7 @@ void executeMerge(char *mergeTask) {
     }
     //printf("offset = %d\n", offset);
     
-    // === chop the 1st char from input 1 ===
+    // === chop the 1st char from input 2 ===
     temp = (char *) malloc(sizeof(char));
     strncpy(temp, input2+1, strlen(input2));
     temp[strlen(input2)] = '\0'; //add the null-termination character '\0'
