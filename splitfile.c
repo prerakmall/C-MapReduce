@@ -1,14 +1,18 @@
+//
+//  splitfile.c
+//  C-MapReduce
+//
+//  Created by jeffrey on 1/12/15.
+//  Copyright © 2015 jeffrey. All rights reserved.
+//
 #include <stdio.h>
 #include <stdlib.h>
 #include<string.h>
 
-// maximum words for split
-const int MAX_WORDS_PER_FILE = 5;
-
 /*
  * Put all GLOBAL variables here
  */
-
+const int MAX_WORDS_PER_FILE = 5; // maximum words for split
 
 char* getSplitFilename(int count) {
     char *splitName = "split_";
