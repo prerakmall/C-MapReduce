@@ -49,7 +49,7 @@ int splitfile() {
     fpOut = fopen(getSplitFilename(splitCount), "w+");
     
     char temp;
-    char *string;
+    char *string = malloc(sizeof(char));
     int charCount = 0;
     int wordCount = 0;
     
@@ -85,7 +85,8 @@ int splitfile() {
             }
         } else {
             if (charCount == 0) {
-                string = malloc(sizeof(char));
+            	free(string);
+                string = calloc(0, sizeof(char));
             }
             string[charCount] = temp;
             string[strlen(string)] = '\0'; //add the null-termination character '\0'
