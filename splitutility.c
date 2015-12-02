@@ -35,7 +35,6 @@ char* getSplitFilename(int count) {
     //printf("--> %s\n", newName);
     
     return newName;
-    free(newName);
 }
 
 int splitfile(char *fNameInput) {
@@ -88,7 +87,7 @@ int splitfile(char *fNameInput) {
             }
         } else {
             if (charCount == 0) {
-		free(string);
+                free(string);
                 string = calloc(0, sizeof(char));
             }
             string[charCount] = temp;
