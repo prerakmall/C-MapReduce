@@ -19,10 +19,8 @@ int mergeCycle = 0;
 
 FILE *fpOut;
 FILE *fpIn;
-int totalMergeWords = 0;
-char* finalMergedOutputFile;
 
-char* getMergeTask(int recordIndex) {
+char* getMergeTaskName(int recordIndex) {
     printf("search for merge task: [%d]\n", recordIndex);
     fpIn = fopen("plan.txt", "r");
     
@@ -59,10 +57,9 @@ char* getMergeTask(int recordIndex) {
     string[strlen(string)] = '\0'; //add the null-termination character '\0'
     printf("merge task found: [%s]\n",string);
     return string;
-    free(string);
 }
 
-char* generateMergePlan(char *inputArray) {
+char* generateMergeTask(char *inputArray) {
     char *outputArray;
     outputArray = (char *) malloc(sizeof(char));
     
@@ -116,7 +113,7 @@ char* generateMergePlan(char *inputArray) {
     free(outputArray);
 }
 
-void preprocessingMerge(int inputSize) {
+void initializeMergeTask(int inputSize) {
     printf("generate merge tasks planning:");
     
     char *inputArray;
@@ -136,7 +133,7 @@ void preprocessingMerge(int inputSize) {
         printf("--> merge cycle: %d\n", mergeCycle);
         
         char *outputArray = (char *) calloc(0, sizeof(char));
-        outputArray = generateMergePlan(inputArray);
+        outputArray = generateMergeTask(inputArray);
         
         // re-create the input array using calloc which can reset the array length to 0
         free(inputArray);
@@ -159,11 +156,9 @@ void preprocessingMerge(int inputSize) {
     free(inputArray);
 }
 
-int mergePlanner(int inputSize) {
-    totalMergeWords = 0; // initialize the merged word count
-    
+int getTotalMergeTask(int inputSize) {
     fpOut = fopen("plan.txt", "w+");
-    preprocessingMerge(inputSize);
+    initializeMergeTask(inputSize);
     fclose(fpOut);
     
     return totalMergeCount;
@@ -184,7 +179,43 @@ char* getFilename(char* param1, char* param2) {
     free(newName);
 }
 
-void executeMerge(char *mergeTask) {
+
+int getNumberOfWordsInFile(char *fName) {
+    FILE *fpIn;
+    fpIn = fopen(fName, "r");
+    
+    char tempChar;
+    int charCount = 0;
+    int wordCount = 0;
+    char *string = malloc(sizeof(char));
+    
+    while ((tempChar = fgetc(fpIn)) != EOF) {
+        //printf("[%c]\n", tempChar);
+        
+        if (tempChar == '\n') {
+            //printf("[%s]-->\n",string);
+            wordCount ++;
+            charCount = 0;
+            free(string);
+            string = calloc(0, sizeof(char));
+            
+        } else {
+            if (charCount == 0) {
+                free(string);
+                string = calloc(0, sizeof(char));
+            }
+            string[charCount] = tempChar;
+            charCount ++;
+        }
+    }
+    free(string);
+    fclose(fpIn);
+    
+    printf("number of words: [%d]\n",wordCount);
+    return wordCount;
+}
+
+void mergeFiles(char *mergeTask) {
     printf("task: [%s]\n", mergeTask);
     printf("size: %lu\n", strlen(mergeTask));
     //printf("\n");
@@ -341,7 +372,7 @@ void executeMerge(char *mergeTask) {
     FILE *fpIn2 = fopen(fNameIn2, "r");
     
     char tmp;
-    char *string;
+    char *string = malloc(sizeof(char));
     int charCount = 0;
     int wordCount = 0;
     
@@ -360,13 +391,13 @@ void executeMerge(char *mergeTask) {
             }
         } else {
             if (charCount == 0) {
-                string = malloc(sizeof(char));
+                free(string);
+                string = calloc(0, sizeof(char));
             }
             string[charCount] = tmp;
             charCount ++;
         }
     }
-    free(string);
     fclose(fpIn1);
     
     while ((tmp = fgetc(fpIn2)) != EOF) {
@@ -384,66 +415,30 @@ void executeMerge(char *mergeTask) {
             }
         } else {
             if (charCount == 0) {
-                string = malloc(sizeof(char));
+                free(string);
+                string = calloc(0, sizeof(char));
             }
             string[charCount] = tmp;
             charCount ++;
         }
     }
-    free(string);
     fclose(fpIn2);
     
-    totalMergeWords = wordCount;
-    printf("total words merged: %d\n", totalMergeWords);
+    free(string);
+    
+    printf("total words merged: %d\n", wordCount);
     fclose(fpOut);
     // ==============================================
-    
-    //finalMergedOutputFile = (char *) malloc(sizeof(char));
-    finalMergedOutputFile = fNameOut;
     
     free(input1);
     free(input2);
     free(output);
 }
 
-int getTotalMergeWords() {
-    return totalMergeWords;
-}
-
-char* getFinalMergedOutputFile() {
-    return finalMergedOutputFile;
-}
-
-int getNumberOfWordsInFile(char *fName) {
-    FILE *fpIn;
-    fpIn = fopen(fName, "r");
-    
-    char temp;
-    char *string;
-    int charCount = 0;
-    int wordCount = 0;
-    
-    while ((temp = fgetc(fpIn)) != EOF) {
-        //printf("[%c]\n", temp);
-        
-        if (temp == '\n') {
-            //printf("[%s]-->\n",string);
-            wordCount ++;
-            charCount = 0;
-            free(string);
-            string = malloc(sizeof(char));
-            
-        } else {
-            if (charCount == 0) {
-                string = malloc(sizeof(char));
-            }
-            string[charCount] = temp;
-            charCount ++;
-        }
-    }
-    fclose(fpIn);
-    free(string);
-    
-    printf("number of words: [%d]\n",wordCount);
-    return wordCount;
-}
+// === for Debug only!!! ===
+//int main() {
+//    char *mergeTask = "A1 B2 C1 ";
+//    mergeFiles(mergeTask);
+//    getNumberOfWordsInFile("input.txt");
+//    exit(0);
+//}
