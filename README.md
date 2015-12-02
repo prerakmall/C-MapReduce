@@ -10,7 +10,10 @@ The map() routine and reduce() routine (in main.c) can however be substituted by
 The input and output file samples has also been uploaded as well for illustration about how the data is being manipulated during the process.
 [Get the output data](https://drive.google.com/file/d/0BwP5Ki5tO2LsTGhHVlBIYmVBUFk/view?usp=sharing)
 
-This is initially developed by myself (Jeffrey K L Wong) and Bill K K Chan as the final project of the course - Fundamentals of Operating Systems during our Master Study in HK Polytechnic University. The program was written using Xcode7.0 and fully tested on Mac OSX 10.10.4 with Apple LLVM compiler (clang-700.0.72). At the time of the project we haven't been able to port it to Linux and this is the enhancement we are currently wordking on to bring the support to GCC compiler.
+This is initially developed by myself (Jeffrey K L Wong) and Bill K K Chan as the final project of the course - Fundamentals of Operating Systems during our Master Study in HK Polytechnic University. The program was written using Xcode7.0 and fully tested on the following environment:
+1. Mac OSX 10.10.4 with Apple LLVM compiler (clang-700.0.72)  
+
+2. Suse Linux 11 (kernel 3.0.93-0.5) with GCC compiler (gcc 4.3.4)  
 
 
 # Execution Overview
