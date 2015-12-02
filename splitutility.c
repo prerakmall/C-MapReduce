@@ -1,5 +1,5 @@
 //
-//  splitfile.c
+//  splitutility.c
 //  C-MapReduce
 //
 //  Created by jeffrey on 1/12/15.
@@ -7,7 +7,7 @@
 //
 #include <stdio.h>
 #include <stdlib.h>
-#include<string.h>
+#include <string.h>
 
 /*
  * Put all GLOBAL variables here
@@ -38,15 +38,16 @@ char* getSplitFilename(int count) {
     free(newName);
 }
 
-int splitfile() {
+int splitfile(char *fNameInput) {
 	FILE *fpIn;
-    fpIn = fopen("input.txt", "r");
+    fpIn = fopen(fNameInput, "r");
     
     // counter for number of split
     int splitCount = 1;
     // prepare the split file Handle
     FILE *fpOut;
-    fpOut = fopen(getSplitFilename(splitCount), "w+");
+    char *fNameSplit = getSplitFilename(splitCount);
+    fpOut = fopen(fNameSplit, "w+");
     
     char temp;
     char *string = malloc(sizeof(char));
@@ -76,7 +77,9 @@ int splitfile() {
                     
                     // close the file handle and re-open to next split file
                     fclose(fpOut);
-                    fpOut = fopen(getSplitFilename(splitCount), "w+");
+                    free(fNameSplit);
+                    fNameSplit = getSplitFilename(splitCount);
+                    fpOut = fopen(fNameSplit, "w+");
                 }
                 
                 charCount = 0;
@@ -85,7 +88,7 @@ int splitfile() {
             }
         } else {
             if (charCount == 0) {
-            	free(string);
+		free(string);
                 string = calloc(0, sizeof(char));
             }
             string[charCount] = temp;
@@ -95,8 +98,17 @@ int splitfile() {
     }
     
     free(string);
+    free(fNameSplit);
     fclose(fpIn);
     fclose(fpOut);
-    
+
     return(splitCount);
 }
+
+// === for Debug only!!! ===
+//int main() {
+//	int count = 0;
+//	count = splitfile("input.txt");
+//	printf("number of splits: %d\n", count);
+//	exit(0);
+//}
