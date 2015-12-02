@@ -17,7 +17,8 @@ char* getCombinedFilename(char *fName) {
     char *choppedName = (char *) malloc(strlen(fName) - strlen(sortedName));
     
     int j = chopLength;
-    for (int i=0; i<=strlen(choppedName); i++) {
+    int i = 0;
+    for (i=0; i<=strlen(choppedName); i++) {
         choppedName [i] = fName[j];
         j++;
     }
@@ -60,7 +61,7 @@ char* getOutputFilename(char *fName) {
     strcpy(newName, outputName);
     strcat(newName, fName);
     //printf("%lu\n", strlen(newName));
-    //printf("--> %s", newName);
+    //printf("--> %s\n", newName);
     
     newName[strlen(newName)] = '\0'; //add the null-termination character '\0'
     return newName;
@@ -79,10 +80,11 @@ char* copyString(char *inputString) {
     
     // initialize the size of the output same as input
     char *outputString;
-    outputString = malloc(strlen(inputString));
+    outputString = calloc(0, strlen(inputString));
     
     // copy the characters from input to output
-    for (int i=0; i<strlen(inputString); i++) {
+    int i = 0;
+    for (i=0; i<strlen(inputString); i++) {
         outputString[i] = inputString[i];
     }
     //printf("output: [%s] ", outputString);
@@ -99,9 +101,9 @@ void analyzeWordsCount(char *fName) {
     
     char temp;
     int charCount = 0;
-    char *string = malloc(sizeof(char));
+    char *string = calloc(0, sizeof(char));
     
-    char *prevString = malloc(sizeof(char));
+    char *prevString = calloc(0, sizeof(char));
     //if (strlen(prevString) <= 0) {
     //    printf("prev String size: %lu \n", strlen(prevString));
     //}
@@ -122,8 +124,8 @@ void analyzeWordsCount(char *fName) {
                 
                 // do the comparision here
                 if (strlen(prevString) <= 0) { // the first record, prevString is empty
-                    //printf("the first record [%s]-->\n",string);
                     string[strlen(string)] = '\0'; //add the null-termination character '\0'
+                    printf("the first record [%s]-->\n",string);
                     
                     /* copy the current string to the previous string
                      * destroy current sting
@@ -137,26 +139,29 @@ void analyzeWordsCount(char *fName) {
                      * if not matches, write the output associated match count to output file, then reset match count to 1
                      */
                     if (compareString(prevString, string) != 0) { // No match is found
-                        string[strlen(string)] = '\0'; //add the null-termination character '\0'
-                        //printf("no more match found for [%s] --> %d\n", prevString, matchCount);
+                        prevString[strlen(prevString)] = '\0'; //add the null-termination character '\0'
+                        printf("no more match found for [%s] --> %d\n", prevString, matchCount);
                         fprintf(fpOut, "%s,%d\n", prevString, matchCount);
                         
                         matchCount = 1;
+                        
+                        string[strlen(string)] = '\0'; //add the null-termination character '\0'
                         prevString = copyString(string);
                         prevString[strlen(prevString)] = '\0'; //add the null-termination character '\0'
                         
                     } else {
                         matchCount++;
-                        //printf("a previous match is found for [%s]-->\n",string);
+                        printf("a previous match is found for [%s]-->\n",string);
                     }
                 }
                 
                 free(string);
-                string = malloc(sizeof(char));
+                string = calloc(0, sizeof(char));
             }
         } else {
             if (charCount == 0) {
-                string = malloc(sizeof(char));
+                free(string);
+                string = calloc(0, sizeof(char));
             }
             string[charCount] = temp;
             charCount ++;
@@ -166,10 +171,10 @@ void analyzeWordsCount(char *fName) {
     /* Avoid the last record being omitted, just use the matchCount to determine a matching or not
      */
     if (matchCount <= 1) { // No match is found
-        //printf("no more match found for [%s] --> %d\n", prevString, matchCount);
-        fprintf(fpOut, "%s,%d\n", string, matchCount);
+        printf("no more match found for [%s] --> %d\n", prevString, matchCount);
+        fprintf(fpOut, "%s,%d\n", prevString, matchCount);
     } else {
-        //printf("a previous match is found for [%s]-->\n",string);
+        printf("a previous match is found for [%s]-->\n",string);
         fprintf(fpOut, "%s,%d\n", string, matchCount);
     }
     
@@ -186,60 +191,85 @@ char* sortWords(char *fName, int wordCount) {
     fpIn = fopen(fName, "r");
     
     char temp;
-    char *string;
+    char *string = malloc(sizeof(char));
     int count = 0;
     
     // instantiate the array of Strings
     int nRows = wordCount;
     int recordCount = 0;
     char **arrayOfString = malloc(nRows * sizeof(char *)); // Allocate row pointers
-    for(int i = 0; i < nRows; i++)
+    int i = 0;
+    for(i = 0; i < nRows; i++)
         arrayOfString[i] = malloc(sizeof(char));  // Allocate each row separately
     
     while ((temp = fgetc(fpIn)) != EOF) {
         if (temp == '\n' || temp == ' ') {
             if (count > 0) {
-                string[strlen(string)] = '\0'; //add the null-termination character '\0'
-                arrayOfString [recordCount] = string;
-                //printf("%s-->",string);
-                recordCount ++;
+                //string[strlen(string)] = '\0'; //add the null-termination character '\0'
+                arrayOfString[recordCount] = calloc(0, sizeof(char));
+                memcpy(arrayOfString [recordCount], string, strlen(string)); // use memcpy to copy pointer value
+                arrayOfString[recordCount][strlen(arrayOfString[recordCount])] = '\0'; //add the null-termination character '\0'
+                //printf("%d --> %s\n", recordCount, arrayOfString[recordCount]);
                 
+                recordCount ++;
                 count = 0;
                 free(string);
-                string = malloc(sizeof(char));
+                string = calloc(0, sizeof(char));
             }
         } else {
             if (count == 0) {
-                string = malloc(sizeof(char));
+                free(string);
+                string = calloc(0, sizeof(char));
             }
             string[count] = temp;	
             count ++;
         }
     }
+    free(string);
     fclose(fpIn);
     
     // competed fetching the file into memory, here is where the sorting happens
     char *tempString = malloc(sizeof(char));
-    for(int i = 0; i < nRows; i++) {
-        for (int j = 1; j< nRows; j++) {
+    i = 0;
+    for(i = 0; i < nRows; i++) {
+        int j = 0;
+        for (j = 1; j< nRows; j++) {
             if (strcmp(arrayOfString[j-1], arrayOfString[j]) > 0) {
-                strcpy(tempString, arrayOfString[j-1]);
-                strcpy(arrayOfString[j-1], arrayOfString[j]);
-                strcpy(arrayOfString[j], tempString);
+                free(tempString);
+                tempString = calloc(0, sizeof(char));
+                memcpy(tempString, arrayOfString[j-1], strlen(arrayOfString[j-1]));
+                //strcpy(tempString, arrayOfString[j-1]);
+                
+                free(arrayOfString[j-1]);
+                arrayOfString[j-1] = calloc(0, sizeof(char));
+                memcpy(arrayOfString[j-1], arrayOfString[j], strlen(arrayOfString[j]));
+                //strcpy(arrayOfString[j-1], arrayOfString[j]);
+                
+                free(arrayOfString[j]);
+                arrayOfString[j] = calloc(0, sizeof(char));
+                memcpy(arrayOfString[j], tempString, strlen(tempString));
+                //strcpy(arrayOfString[j], tempString);
             }
         }
     }
+    free(tempString);
     
     FILE *fpOut;
     char *fNameOutput = getSortedFilename(fName);
     fpOut = fopen(fNameOutput, "w+");
-    for(int i = 0; i < nRows; i++) {
+    i = 0;
+    for(i = 0; i < nRows; i++) {
+        arrayOfString[i][strlen(arrayOfString[i])] = '\0'; //add the null-termination character '\0'
         fprintf(fpOut, "%s\n", arrayOfString[i]);
     }
     fclose(fpOut);
-    
-    free(arrayOfString);
     free(fName);
+    
+    i = 0;
+    for(i = 0; i < nRows; i++) {
+        free(arrayOfString[i]); // clear each char array in the array
+    }
+    free(arrayOfString);
     
     return fNameOutput;
 }
@@ -260,9 +290,9 @@ int parseWords(char *fName) {
 	int charCount = 0;
 	int wordCount = 0;
 	char *string = malloc(sizeof(char));
-    
+    	
 	while ((temp = fgetc(fpIn)) != EOF) {
-        //printf("[%c]\n", temp);
+		//printf("[%c]\n", temp);
         
 		if (temp == '\n' || temp == ' ' || temp == '?' || temp == ',' || temp == '.' || temp == '\"' ||
             		temp == '!' || temp == '@' || temp == '~' || temp == '#' || temp == '$' || temp == '%' ||
@@ -292,10 +322,10 @@ int parseWords(char *fName) {
 	free(string);
 	fclose(fpIn);
 	fclose(fpOut);
-
+    
 	char *fNameSortedOutput = sortWords(fNameOutput, wordCount);
 	free(fNameSortedOutput);
-	
+    
 	int count;
 	//count = analyzeWordsCount(fNameOutput); // skip the combination of wordcounts, push it to later stage
     
