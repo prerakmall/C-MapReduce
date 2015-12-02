@@ -10,9 +10,9 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "splitfile.c" // for splitting the input problem
-#include "wordcount.c" // for word counting operating
-#include "mergeutility.c" // for estimating and planning of the reduce tasks
+#include "splitutility.c" // for splitting the input problem
+#include "wordutility.c" // for word parsing and counting operation
+#include "mergeutility.c" // for reduce tasks planning and execution
 
 /*
  * Put all GLOBAL variables here
@@ -36,14 +36,14 @@ int reducerToMasterPipe[2]; // for Reducer -> Master
 
 
 
-void reduce(char *mergeTask) {
+void reduce(char *reduceTask) {
     // implement the reduce operation here ...
-    executeMerge(mergeTask);
+    mergeFiles(reduceTask);
 }
 
 void map(char *fName) {
     // implement the map operation here ...
-    wordcount(fName);
+    parseWords(fName);
 }
 
 void reducerInformMaster() {
@@ -145,7 +145,7 @@ void masterWakeupUser() {
     // ===================================
     
     // === combine the counts in final reduced file ===
-    countWords(sortedMergeFile);
+    analyzeWordsCount(sortedMergeFile);
     // ================================================
     
     // === All MapReduce tasks finish, Master inform Parent to wake-up ===
@@ -231,7 +231,7 @@ void masterWaitForMapper() {
 void initReduceTasks() {
     // implement the logic to decide no. of reduce tasks based on output file from mapper
     //reduceTasksCount = 2; // debugger
-    reduceTasksCount = mergePlanner(mapTasksCount); // pass the input problem size
+    reduceTasksCount = getTotalMergeTask(mapTasksCount); // pass the input problem size
     printf("number of reduce tasks planned: %d\n:", reduceTasksCount);
 }
 
@@ -253,7 +253,7 @@ void masterAssignReducer() {
         /* assign the corresonding merge task to each
          * reducer base on the merge plan
          */
-        char* buf = getMergeTask(reduceTasksCount - initialTaskCount + 1);
+        char* buf = getMergeTaskName(reduceTasksCount - initialTaskCount + 1);
         
         /* this line will hit error and quit the program
          * if no more reader is accepting input from the pipe
@@ -456,7 +456,7 @@ void initChildsCounter() {
 
 void initMapTasks() {
     // implement the logic to decide no. of map tasks based on input file from user
-    mapTasksCount = splitfile();
+    mapTasksCount = splitfile("input.txt");
     printf("Map Tasks Count: %d\n", mapTasksCount);
 }
 
