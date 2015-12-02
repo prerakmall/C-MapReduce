@@ -60,7 +60,7 @@ void reducerRoutine() {
     close(masterToReducerPipe[1]); // avoid reducer write to master
     
     // initilize a dynamic char array for fetching the input data
-    char* buf = (char *) malloc(sizeof(char));
+    char* buf = (char *) calloc(0, sizeof(char));
     
     int temp;
     
@@ -80,11 +80,8 @@ void reducerRoutine() {
         // inform master when reduce task finish
         reducerInformMaster();
     }
-    
     printf("reducer [PID: %d] process finished\n", getpid());
     
-    // do the clean-up here
-    free(buf);
     close(reducerToMasterPipe[1]); // avoid reducer further writing output to master
     close(masterToReducerPipe[0]); // avoid reducer to further read from master
 }
@@ -103,7 +100,7 @@ void mapperRoutine() {
     close(masterToMapperPipe[1]); // avoid mapper write to master
     
     // initilize a dynamic char array for fetching the input data
-    char* buf = (char *) malloc(sizeof(char));
+    char* buf = (char *) calloc(0, sizeof(char));
     
     int temp;
     
@@ -134,9 +131,10 @@ void mapperRoutine() {
 
 void masterWakeupUser() {
     // === sort the final reduced file ===
-    char *tmp = (char *) malloc(sizeof(char));
-    printf("@@ reduceTasksCount: %d\n", reduceTasksCount);
-    tmp[0] = reduceTasksCount + '0';
+    char *tmp = calloc(0, sizeof(char));
+    printf("@@ reduce tasks count: %d\n", reduceTasksCount);
+    tmp[0] = (reduceTasksCount) + '0';
+    printf("@@ tmp: %s\n", tmp);
     char *finalMergedFileName = getFilename("reduced_", tmp);
     printf("@@ %s:\n", finalMergedFileName);
     int numberOfWords = getNumberOfWordsInFile(finalMergedFileName);
@@ -163,7 +161,7 @@ void masterWaitForReducer() {
     // === Master wait for the callback from all Reducers ===
     close(reducerToMasterPipe[1]); // avoid master write input from reducer
     
-    char* buf = (char *) malloc(sizeof(char)); // initilize a dynamic char array for fetching data from pipe
+    char* buf = (char *) calloc(0, sizeof(char)); // initilize a dynamic char array for fetching data from pipe
     int temp;
     
     int completedTaskCount = 0;
@@ -199,7 +197,7 @@ void masterWaitForMapper() {
     // === Master wait for the callback from all Mappers ===
     close(mapperToMasterPipe[1]); // avoid master write input from mapper
     
-    char* buf = (char *) malloc(sizeof(char)); // initilize a dynamic char array for fetching data from pipe
+    char* buf = (char *) calloc(0, sizeof(char)); // initilize a dynamic char array for fetching data from pipe
     int temp;
     
     int completedTaskCount = 0;
@@ -243,8 +241,8 @@ void masterAssignReducer() {
     //char *buf = "this is a reduce test";
     //printf("output buf: %lu \n", strlen(buf));
     
+    // initialize the reduce task
     initReduceTasks();
-    
     int initialTaskCount = reduceTasksCount;
     
     while(1) {
@@ -253,12 +251,16 @@ void masterAssignReducer() {
         /* assign the corresonding merge task to each
          * reducer base on the merge plan
          */
-        char* buf = getMergeTaskName(reduceTasksCount - initialTaskCount + 1);
+        char *buf = getMergeTaskName(reduceTasksCount - initialTaskCount + 1);
+        //printf("--> %s\n", buf);
         
         /* this line will hit error and quit the program
          * if no more reader is accepting input from the pipe
          */
         write(masterToReducerPipe[1], buf, strlen(buf));
+        
+        // free the buf
+        free(buf);
         
         initialTaskCount--;
         
@@ -330,7 +332,7 @@ void userRoutine() {
     // === wait for the wake-up signal from Master to indicate the completion of MapReduce tasks ===
     close(masterToParentPipe[1]); // avoid user write to input from master
     
-    char* buf = (char *) malloc(sizeof(char)); // initilize a dynamic char array for fetching data from pipe
+    char* buf = (char *) calloc(0, sizeof(char)); // initilize a dynamic char array for fetching data from pipe
     int temp;
     
     /* - the read command is blocking
