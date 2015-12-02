@@ -1,5 +1,5 @@
 //
-//  wordcount.c
+//  wordutility.c
 //  C-MapReduce
 //
 //  Created by jeffrey on 1/12/15.
@@ -7,7 +7,7 @@
 //
 #include <stdlib.h>
 #include <stdio.h>
-#include<string.h>
+#include <string.h>
 
 char* getCombinedFilename(char *fName) {
     char *sortedName = "sorted_";
@@ -32,7 +32,6 @@ char* getCombinedFilename(char *fName) {
     //printf("--> %s\n", newName);
     
     return newName;
-    free(newName);
 }
 
 char* getSortedFilename(char *fName) {
@@ -45,10 +44,10 @@ char* getSortedFilename(char *fName) {
     strcpy(newName, sortedName);
     strcat(newName, fName);
     //printf("%lu\n", strlen(newName));
-    //printf("--> %s", newName);
+    //printf("--> %s\n", newName);
     
+    newName[strlen(newName)] = '\0'; //add the null-termination character '\0'
     return newName;
-    free(newName);
 }
 
 char* getOutputFilename(char *fName) {
@@ -63,8 +62,8 @@ char* getOutputFilename(char *fName) {
     //printf("%lu\n", strlen(newName));
     //printf("--> %s", newName);
     
+    newName[strlen(newName)] = '\0'; //add the null-termination character '\0'
     return newName;
-    free(newName);
 }
 
 int compareString(char *string1, char *string2) {
@@ -93,7 +92,7 @@ char* copyString(char *inputString) {
     return outputString;
 }
 
-void countWords(char *fName) {
+void analyzeWordsCount(char *fName) {
     //printf("%s\n", fName);
     FILE *fpIn;
     fpIn = fopen(fName, "r");
@@ -110,7 +109,8 @@ void countWords(char *fName) {
     int matchCount = 1; //initialize the matchCount to 1 cause this is basic count value for each word exist in the input file
     
     FILE *fpOut;
-    fpOut = fopen(getCombinedFilename(fName), "w+");
+    char *fNameCombinedOutput = getCombinedFilename(fName);
+    fpOut = fopen(fNameCombinedOutput, "w+");
     
     while ((temp = fgetc(fpIn)) != EOF) {
         //printf("[%c]\n", temp);
@@ -175,6 +175,7 @@ void countWords(char *fName) {
     
     free(string);
     free(prevString);
+    free(fNameCombinedOutput);
     fclose(fpIn);
     fclose(fpOut);
 }
@@ -231,68 +232,79 @@ char* sortWords(char *fName, int wordCount) {
     
     FILE *fpOut;
     char *fNameOutput = getSortedFilename(fName);
-    fpOut = fopen(getSortedFilename(fName), "w+");
+    fpOut = fopen(fNameOutput, "w+");
     for(int i = 0; i < nRows; i++) {
         fprintf(fpOut, "%s\n", arrayOfString[i]);
     }
     fclose(fpOut);
     
     free(arrayOfString);
+    free(fName);
     
     return fNameOutput;
 }
 
-int wordcount(char *fName) {
-	FILE *fpIn;
-    FILE *fpOut;
-	fpIn = fopen(fName, "r");
-    fpOut = fopen(getOutputFilename(fName), "w+");
+int parseWords(char *fName) {
+    char *fNameOutput = getOutputFilename(fName);
     
-    // debugger
-    //fpIn = fopen("input01.txt", "r");
-    //fpOut = fopen("output01.txt", "w+");
+	FILE *fpIn;
+	FILE *fpOut;
+	fpIn = fopen(fName, "r");
+	fpOut = fopen(fNameOutput, "w+");
+
+	// debugger
+	//fpIn = fopen("input01.txt", "r");
+	//fpOut = fopen("output01.txt", "w+");
     
 	char temp;
 	int charCount = 0;
-    int wordCount = 0;
-    char *string = malloc(sizeof(char));
+	int wordCount = 0;
+	char *string = malloc(sizeof(char));
     
 	while ((temp = fgetc(fpIn)) != EOF) {
         //printf("[%c]\n", temp);
         
 		if (temp == '\n' || temp == ' ' || temp == '?' || temp == ',' || temp == '.' || temp == '\"' ||
-            temp == '!' || temp == '@' || temp == '~' || temp == '#' || temp == '$' || temp == '%' ||
-            temp == '%' || temp == '^' || temp == '&' || temp == '*' || temp == '(' || temp == ')' ||
-            temp == '-' || temp == '_' || temp == '{' || temp == '}' || temp == '[' || temp == ']' ||
-            temp == '<' || temp == '>' || temp == '\r' || temp == '/' || temp == '\'' || temp == '`'
-        ){
+            		temp == '!' || temp == '@' || temp == '~' || temp == '#' || temp == '$' || temp == '%' ||
+            		temp == '%' || temp == '^' || temp == '&' || temp == '*' || temp == '(' || temp == ')' ||
+            		temp == '-' || temp == '_' || temp == '{' || temp == '}' || temp == '[' || temp == ']' ||
+            		temp == '<' || temp == '>' || temp == '\r' || temp == '/' || temp == '\'' || temp == '`'
+		){
 			if (charCount > 0) {
-                string[strlen(string)] = '\0'; //add the null-termination character '\0'
+				string[strlen(string)] = '\0'; //add the null-termination character '\0'
 				//printf("[%s]-->\n",string);
-                fprintf(fpOut, "%s\n", string);
-                wordCount ++;
-                charCount = 0;
+				fprintf(fpOut, "%s\n", string);
+				wordCount ++;
+				charCount = 0;
 				free(string);
-                string = calloc(0, sizeof(char));
+				string = calloc(0, sizeof(char));
 			}
 		} else {
 			if (charCount == 0) {
-                free(string);
+				free(string);
 				string = calloc(0, sizeof(char));
 			}
 			string[charCount] = temp;
-            string[strlen(string)] = '\0'; //add the null-termination character '\0'
+			string[strlen(string)] = '\0'; //add the null-termination character '\0'
 			charCount ++;
 		}
 	}
-    free(string);
+	free(string);
 	fclose(fpIn);
-    fclose(fpOut);
+	fclose(fpOut);
+
+	char *fNameSortedOutput = sortWords(fNameOutput, wordCount);
+	free(fNameSortedOutput);
+	
+	int count;
+	//count = analyzeWordsCount(fNameOutput); // skip the combination of wordcounts, push it to later stage
     
-    char *fNameOutput = sortWords(getOutputFilename(fName), wordCount);
-    //countWords(fNameOutput); // skip the combination of wordcounts, push it to later stage
-    
-	return 0;
+	return count;
 }
 
+// === for Debug only!!! ===
+//int main() {
+//	parseWords("input.txt");
+//	exit(0);
+//}
 
