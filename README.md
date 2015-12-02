@@ -1,7 +1,7 @@
 # C-MapReduce
 A simple Map Reduce implementation in C programming language.
 
-This program aims to illustrate the basic functioning of a MapReduce framework, it runs on local machine but forking the corresponding worker processes to simulate distributed processes in a cluster of machines. The Inter-Process Communication (IPC) among the workers (Mapper / Reducer / Master) processes and the parent process (the user) is simply achieved by using Uunamed Pipes.
+This program aims to illustrate the basic functioning of a MapReduce framework, it runs on local machine but forking the corresponding worker processes to simulate distributed processes in a cluster of machines. The Inter-Process Communication (IPC) among the workers (Mapper / Reducer / Master) processes and the parent process (the user) is simply achieved by using Unamed Pipes.
 
 We used an example of a hand-made ASCII word counting application to demonstrate the MapReduce computation, it merely counts the number of English words from an input source, and breaking down the input problem into numerous smaller chunks which will then be processed by the Map workers to generate intermediate output files, such output files will be further processed by the Reduce workers to generate the final combined output files.
 
