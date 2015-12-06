@@ -1,7 +1,7 @@
 # C-MapReduce
 A simple Map Reduce implementation in C programming language.
 
-This program aims to illustrate the basic functioning of a MapReduce framework, it runs on local machine but forking the corresponding worker processes to simulate distributed processes in a cluster of machines. The Inter-Process Communication (IPC) among the workers (Mapper / Reducer / Master) processes and the parent process (the user) is simply achieved by using Unnamed Pipes.
+This program aims to illustrate the basic functioning of a MapReduce framework, it runs on local machine but forking the corresponding worker processes to simulate parallel processing in a cluster of machines. The Inter-Process Communication (IPC) among the workers (Mapper / Reducer / Master) processes and the parent process (the user) is simply achieved by using Unnamed Pipes.
 
 We used an example of a hand-made ASCII word counting application to demonstrate the MapReduce computation, it merely counts the number of English words from an input source, and breaking down the input problem into numerous smaller chunks which will then be processed by the Map workers to generate intermediate output files, such output files will be further processed by the Reduce workers to generate the final combined output files.
 
@@ -10,12 +10,22 @@ The map() routine and reduce() routine (in main.c) can however be substituted by
 The input and output file samples has also been uploaded as well for illustration about how the data is being manipulated during the process.
 [Get the output data](https://drive.google.com/file/d/0BwP5Ki5tO2LsTGhHVlBIYmVBUFk/view?usp=sharing)
 
-This is initially developed by myself (Jeffrey K L Wong) and Bill K K Chan as the final project of the course - Fundamentals of Operating Systems during our Master Study in HK Polytechnic University. The program was written using Xcode7.0 and fully tested on the following environment:  
+This is initially developed by myself (Jeffrey K L Wong) and my group teammate (Bill K K Chan) as the final project of the course - Fundamentals of Operating Systems during our Master Study in HK Polytechnic University. The program was written using Xcode7.0 and fully tested on the following environment:  
 
 1. Mac OSX 10.10.4 with Apple LLVM compiler (clang-700.0.72)  
 
 2. Suse Linux 11 (kernel 3.0.93-0.5) with GCC compiler (gcc 4.3.4)  
 
+Our motivation is mainly driven by the most popular technique in current machine learning area - Deep Neural Network (DNN), while DNN is one of the wide variety machine learning techniques, it was once considered impossible until recent technology breakthrough in distributed computing (using MapReduce Framework), parallel computing (using GPU) and the massively available training samples (from Big Data), becomes technically feasible simply by performing many computationally-intensive calculations in parallel, or offloading it to a large number of commodity machines in a cluster. From a user's perspective, applications simply run significantly faster.  
+  
+# References  
+- [NVIDIA - What is Deep Learning](https://developer.nvidia.com/deep-learning)
+- [NVIDIA - What is GPU Computing](http://www.nvidia.com/object/what-is-gpu-computing.html#sthash.4u5siGha.dpuf)
+- [Google - Large Scale Deep Neural Network for Intelligent Computer Systems](http://research.google.com/people/jeff/BayLearn2015.pdf)
+- [Facebook - Unreasonable Effectiveness of Deep Learning](http://on-demand.gputechconf.com/gtc/2014/webinar/gtc-express-convolutional-networks-webinar.pdf)
+- [NVIDIA - GPU Parallel Computing with cuDNN](http://devblogs.nvidia.com/parallelforall/accelerate-machine-learning-cudnn-deep-neural-network-library/)
+- [Google - MapReduce: Simplified Data Processing on Large Clusters](http://research.google.com/archive/mapreduce-osdi04-slides/index.html)
+- [Google - Living with Big Data - Challenges and Opportunities](http://research.google.com/people/jeff/MIT_BigData_Sep2012.pdf)
 
 # Execution Overview
 The Map invocations are distributed across multiple processes by automatically partitioning the input data into a set of M splits, the input splits are sent to the Map workers and be processed in parallel. While Reduce invocations are distributed by partitioning the intermediate key space into R pieces are simply specified by the user.
