@@ -16,7 +16,7 @@ This is initially developed by myself (Jeffrey K L Wong) and my group teammate (
 2. Suse Linux 11 (kernel 3.0.93-0.5) with GCC compiler (gcc 4.3.4)  
 
 # Motivation  
-Our motivation is mainly driven by <b>Deep Neural Network (DNN)</b>, one of the most popular technique nowadays in current machine learning area. While DNN is one of the wide variety of machine learning techniques, it was once considered impossible until recent technology breakthrough in:  
+Our motivation is mainly inspired by <b>Deep Neural Network (DNN)</b>, one of the most popular technique nowadays in machine learning area. While DNN is one of the wide variety of machine learning techniques, it was once considered impossible in last decade until recent technology breakthrough in:  
 
 1. distributed computing (using MapReduce Framework) 
 2. parallel computing (using GPU) and 
