@@ -16,7 +16,14 @@ This is initially developed by myself (Jeffrey K L Wong) and my group teammate (
 
 2. Suse Linux 11 (kernel 3.0.93-0.5) with GCC compiler (gcc 4.3.4)  
 
-Our motivation is mainly driven by the most popular technique in current machine learning area - Deep Neural Network (DNN), while DNN is one of the wide variety machine learning techniques, it was once considered impossible until recent technology breakthrough in distributed computing (using MapReduce Framework), parallel computing (using GPU) and the massively available training samples (from Big Data), becomes technically feasible simply by performing many computationally-intensive calculations in parallel, or offloading it to a large number of commodity machines in a cluster. From a user's perspective, applications simply run significantly faster.  
+# Motivation  
+Our motivation is mainly driven by the most popular technique in current machine learning area - <b>Deep Neural Network (DNN)</b>. While nowadays DNN is most popular originally from one of the wide variety machine learning techniques, it was once considered impossible until recent technology breakthrough in:  
+
+1. distributed computing (using MapReduce Framework), 
+2. parallel computing (using GPU) and 
+3. the massively available training samples (from Big Data)
+
+DNN becomes technically feasible simply by performing many computationally-intensive calculations in parallel, or offloading it to a large number of commodity machines in a cluster. From a user's perspective, applications simply run significantly faster.  
   
 # References  
 - [NVIDIA - What is Deep Learning](https://developer.nvidia.com/deep-learning)
