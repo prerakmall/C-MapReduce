@@ -12,14 +12,13 @@ The input and output file samples has also been uploaded as well for illustratio
 
 This is initially developed by myself (Jeffrey K L Wong) and my group teammate (Bill K K Chan) as the final project of the course - Fundamentals of Operating Systems during our Master Study in HK Polytechnic University. The program was written using Xcode7.0 and fully tested on the following environment:  
 
-1. Mac OSX 10.10.4 with Apple LLVM compiler (clang-700.0.72)  
-
+1. Mac OSX 10.10.4 with Apple LLVM compiler (clang-700.0.72)
 2. Suse Linux 11 (kernel 3.0.93-0.5) with GCC compiler (gcc 4.3.4)  
 
 # Motivation  
 Our motivation is mainly driven by the most popular technique in current machine learning area - <b>Deep Neural Network (DNN)</b>. While nowadays DNN is most popular originally from one of the wide variety machine learning techniques, it was once considered impossible until recent technology breakthrough in:  
 
-1. distributed computing (using MapReduce Framework), 
+1. distributed computing (using MapReduce Framework) 
 2. parallel computing (using GPU) and 
 3. the massively available training samples (from Big Data)
 
