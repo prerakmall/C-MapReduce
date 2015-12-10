@@ -22,7 +22,7 @@ Our motivation is mainly inspired by <b>Deep Neural Network (DNN)</b>, one of th
 2. parallel computing (using GPU) and 
 3. the massively available training samples (from Big Data)
 
-Since then DNN becomes technically feasible simply by performing many computationally-intensive calculations in parallel, or offloading it to a large number of commodity machines in a cluster. From a user's perspective, applications simply run significantly faster.  
+Since then DNN becomes technically feasible simply by performing many computationally-intensive calculations in parallel, or offloading it to a large number of commodity machines distributed over the network. From a user's perspective, applications simply run significantly faster then ever.  
   
 # References  
 - [NVIDIA - What is Deep Learning](https://developer.nvidia.com/deep-learning)
