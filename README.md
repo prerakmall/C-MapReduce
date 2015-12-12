@@ -68,8 +68,8 @@ The WordCount application is quite straight-forward.
 The Mapper implementation, via the map method, processes one line at a time. It splits the line into tokens separated by whitespaces or symbols, and emits a key-value pair of < _WORD_ , 1>.
 
 For an sample input:  
-Hello World Bye World  
-Hello Map Reduce Goodbye Map Reduce  
+<b>Hello World Bye World</b>  
+<b>Hello Map Reduce Goodbye Map Reduce</b>    
 
 The first map emits:  
 < Hello, 1>  
