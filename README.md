@@ -31,7 +31,8 @@ Since then DNN becomes technically feasible simply by performing many computatio
 - [Facebook - Unreasonable Effectiveness of Deep Learning](http://on-demand.gputechconf.com/gtc/2014/webinar/gtc-express-convolutional-networks-webinar.pdf)
 - [NVIDIA - GPU Parallel Computing with cuDNN](http://devblogs.nvidia.com/parallelforall/accelerate-machine-learning-cudnn-deep-neural-network-library/)
 - [Google - MapReduce: Simplified Data Processing on Large Clusters](http://research.google.com/archive/mapreduce-osdi04-slides/index.html)
-- [Google - Living with Big Data - Challenges and Opportunities](http://research.google.com/people/jeff/MIT_BigData_Sep2012.pdf)
+- [Google - Living with Big Data - Challenges and Opportunities](http://research.google.com/people/jeff/MIT_BigData_Sep2012.pdf)  
+- [Bloomberg - Why 2015 is a breakthrough year in Artificial Intelligence](http://www.bloomberg.com/news/articles/2015-12-08/why-2015-was-a-breakthrough-year-in-artificial-intelligence)
 
 # Execution Overview
 The Map invocations are distributed across multiple processes by automatically partitioning the input data into a set of M splits, the input splits are sent to the Map workers and be processed in parallel. While Reduce invocations are distributed by partitioning the intermediate key space into R pieces are simply specified by the user.
